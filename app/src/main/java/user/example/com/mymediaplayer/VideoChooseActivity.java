@@ -30,16 +30,16 @@ public class VideoChooseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        mLinkedList=VideoPlayerActivity.playerList;
-        mLayoutInflater=LayoutInflater.from(this);
-        ImageButton iButton=(ImageButton)findViewById(R.id.cancelButton);
+        mLinkedList = VideoPlayerActivity.playerList;
+        mLayoutInflater = LayoutInflater.from(this);
+        ImageButton iButton = (ImageButton) findViewById(R.id.cancelButton);
         iButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 VideoChooseActivity.this.finish();
             }
         });
-        ListView myListView=(ListView)findViewById(R.id.list);
+        ListView myListView = (ListView) findViewById(R.id.list);
         myListView.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -58,10 +58,10 @@ public class VideoChooseActivity extends AppCompatActivity {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                if(convertView==null){
-                    convertView=mLayoutInflater.inflate(R.layout.list,null);
+                if (convertView == null) {
+                    convertView = mLayoutInflater.inflate(R.layout.list, null);
                 }
-                TextView text=(TextView)convertView.findViewById(R.id.text);
+                TextView text = (TextView) convertView.findViewById(R.id.text);
                 text.setText(mLinkedList.get(position).displayName);
                 return convertView;
             }
@@ -69,9 +69,9 @@ public class VideoChooseActivity extends AppCompatActivity {
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent();
-                intent.putExtra("CHOOSE",position);
-                setResult(Activity.RESULT_OK,intent);
+                Intent intent = new Intent();
+                intent.putExtra("CHOOSE", position);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
             }
         });
