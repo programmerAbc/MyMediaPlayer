@@ -1,12 +1,12 @@
 package user.example.com.mymediaplayer;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -17,9 +17,7 @@ import android.widget.MediaController;
  * Created by user1 on 2015/12/8.
  */
 public class VideoView extends SurfaceView implements MediaController.MediaPlayerControl {
-
     private String TAG = "VideoView";
-
     private Context mContext;
     private Uri mUri;
     private int mDuration;
@@ -74,8 +72,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         }
     };
     private MediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
-
-
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
             mCurrentBufferPercentage = percent;
@@ -127,18 +123,59 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
                         }
                     }
                 } else {
-                    if(mSeekWhenPrepared!=0){
+                    if (mSeekWhenPrepared != 0) {
                         mMediaPlayer.seekTo(mSeekWhenPrepared);
-                        mSeekWhenPrepared=0;
+                        mSeekWhenPrepared = 0;
                     }
-                    if(mStartWhenPrepared){
+                    if (mStartWhenPrepared) {
                         mMediaPlayer.start();
-                        mStartWhenPrepared=false;
+                        mStartWhenPrepared = false;
                     }
                 }
             }
         }
     };
+
+    private MediaPlayer.OnCompletionListener mCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            if (mMediaController != null) {
+                mMediaController.hide();
+            }
+            if (mOnCompletionListener != null) {
+                mOnCompletionListener.onCompletion(mMediaPlayer);
+            }
+        }
+    };
+
+    private MediaPlayer.OnErrorListener mErrorListener = new MediaPlayer.OnErrorListener() {
+
+        @Override
+        public boolean onError(MediaPlayer mp, int what, int extra) {
+            if (mMediaController != null) {
+                mMediaController.hide();
+            }
+            if (mOnErrorListener != null) {
+                if (mOnErrorListener.onError(mp, what, extra)) {
+                    return true;
+                }
+            }
+            return true;
+        }
+    };
+
+    public void setOnPreparedListener(MediaPlayer.OnPreparedListener l) {
+        mOnPreparedListener = l;
+    }
+
+    public void setOnCompletionListener(MediaPlayer.OnCompletionListener l) {
+        mOnCompletionListener = l;
+    }
+
+    public void setOnErrorListener(MediaPlayer.OnErrorListener l) {
+        mOnErrorListener = l;
+    }
+
 
     private void openVideo() {
         if (mUri == null || mSurfaceHolder == null) {
@@ -155,7 +192,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         try {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
-            mMediaPlayer.setOnVideoSizeChangedListener(mySizeChangeListener);
+            mMediaPlayer.setOnVideoSizeChangedListener(mVideoSizeChangedListener);
             mIsPrepared = false;
             mDuration = -1;
             mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
@@ -170,6 +207,14 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
             attachMediaController();
         } catch (Exception e) {
         }
+    }
+
+    public void setMediaController(MediaController controller) {
+        if (mMediaController != null) {
+            mMediaController.hide();
+        }
+        mMediaController = controller;
+        attachMediaController();
     }
 
     private void attachMediaController() {
@@ -192,14 +237,82 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
     public VideoView(Context context) {
         super(context);
+        mContext=context;
+        initVideoView();
     }
 
     public VideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext=context;
+        initVideoView();
     }
 
     public VideoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext=context;
+        initVideoView();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = getDefaultSize(mVideoWidth, widthMeasureSpec);
+        int height = getDefaultSize(mVideoHeight, heightMeasureSpec);
+        setMeasuredDimension(width, height);
+    }
+
+    public int resolveAdjustedSize(int desiredSize, int measureSpec) {
+        int result = desiredSize;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
+        switch (specMode) {
+            case MeasureSpec.AT_MOST:
+                result = Math.min(desiredSize, specSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                result = specSize;
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    public void setVideoPath(String path) {
+        setVideoURI(Uri.parse(path));
+    }
+
+    public void setVideoURI(Uri uri) {
+        mUri = uri;
+        mStartWhenPrepared = false;
+        mSeekWhenPrepared = 0;
+        openVideo();
+        requestLayout();
+        invalidate();
+    }
+
+    public void stopPlayback() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mIsPrepared && mMediaPlayer != null && mMediaController != null) {
+            toggleMediaControlsVisiblity();
+        }
+        return false;
+    }
+
+    private void toggleMediaControlsVisiblity() {
+        if (mMediaController.isShown()) {
+            mMediaController.hide();
+        } else {
+            mMediaController.show();
+        }
     }
 
     public int getmVideoWidth() {
@@ -220,42 +333,78 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
     private void initVideoView() {
         mVideoWidth = 0;
         mVideoHeight = 0;
-        this.getHolder().addCallback();
-
+        this.getHolder().addCallback(mSurfaceHolderCallback);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        requestFocus();
     }
+
+
 
     @Override
     public void start() {
-
+        if (mMediaPlayer != null && mIsPrepared) {
+            mMediaPlayer.start();
+            mStartWhenPrepared = false;
+        } else {
+            mStartWhenPrepared = true;
+        }
     }
+
 
     @Override
     public void pause() {
-
+        if (mMediaPlayer != null && mIsPrepared) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+            }
+        }
+        mStartWhenPrepared = false;
     }
 
     @Override
     public int getDuration() {
-        return 0;
+        if (mMediaPlayer != null && mIsPrepared) {
+            if (mDuration > 0) {
+                return mDuration;
+            }
+            mDuration = mMediaPlayer.getDuration();
+            return mDuration;
+        }
+        mDuration = -1;
+        return mDuration;
     }
 
     @Override
     public int getCurrentPosition() {
+        if (mMediaPlayer != null && mIsPrepared) {
+            return mMediaPlayer.getCurrentPosition();
+        }
         return 0;
     }
 
     @Override
     public void seekTo(int pos) {
-
+        if (mMediaPlayer != null && mIsPrepared) {
+            mMediaPlayer.seekTo(pos);
+        } else {
+            mSeekWhenPrepared = pos;
+        }
     }
 
     @Override
     public boolean isPlaying() {
+        if(mMediaPlayer!=null&&mIsPrepared){
+            return mMediaPlayer.isPlaying();
+        }
         return false;
     }
 
     @Override
     public int getBufferPercentage() {
+        if(mMediaPlayer!=null){
+            return mCurrentBufferPercentage;
+        }
         return 0;
     }
 

@@ -3,4 +3,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="path">/sdcard/test0.mp4</string>
+    <string name="title_activity_video_choose">VideoChooseActivity</string>
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
 </resources>

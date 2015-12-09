@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:columnCount="4"
+    app:columnCount="5"
     app:rowCount="2">
 
     <TextView
@@ -19,7 +19,7 @@
 
     <SeekBar
         android:id="@+id/seekbar"
-        app:layout_columnSpan="2"
+        app:layout_columnSpan="3"
         app:layout_columnWeight="1"
         android:layout_width="wrap_content"
         app:layout_gravity="center_vertical"
@@ -53,6 +53,15 @@
         app:layout_rowWeight="1"
         />
     <ImageButton
+        android:id="@+id/playStopButton"
+        app:layout_gravity="center_vertical"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:src="@drawable/play"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1"
+        />
+    <ImageButton
         android:id="@+id/forwardButton"
         app:layout_gravity="center_vertical"
         android:scaleType="fitCenter"
@@ -62,7 +71,7 @@
         app:layout_rowWeight="1"
         />
     <ImageButton
-        android:id="@+id/volumnButton"
+        android:id="@+id/volumeButton"
         app:layout_gravity="center_vertical"
         android:scaleType="fitCenter"
         android:background="@android:color/transparent"
