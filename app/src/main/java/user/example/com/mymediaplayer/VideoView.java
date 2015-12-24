@@ -315,11 +315,11 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         }
     }
 
-    public int getmVideoWidth() {
+    public int getVideoWidth() {
         return mVideoWidth;
     }
 
-    public int getmVideoHeight() {
+    public int getVideoHeight() {
         return mVideoHeight;
     }
 
