@@ -30,7 +30,7 @@ public class VideoChooseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        mLinkedList = VideoPlayerActivity.playerList;
+        mLinkedList = VideoPlayerActivity.playList;
         mLayoutInflater = LayoutInflater.from(this);
         ImageButton iButton = (ImageButton) findViewById(R.id.cancelButton);
         iButton.setOnClickListener(new View.OnClickListener() {

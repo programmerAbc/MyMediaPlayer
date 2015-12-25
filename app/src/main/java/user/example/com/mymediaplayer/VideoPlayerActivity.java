@@ -66,7 +66,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_player);
+        setContentView(R.layout.activity_main);
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
             @Override
             public boolean queueIdle() {
@@ -215,7 +215,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 isSlient = !isSlient;
                 updateVolume(currentVolume);
                 cancelDelayHide();
-                hideControlerDelay();
+                hideControllerDelay();
                 return true;
             }
         });
@@ -285,7 +285,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                setViedoScale(SCREEN_DEFAULT);
+                setVideoScale(SCREEN_DEFAULT);
                 isFullScreen=false;
                 if(isControllerShow){
                     showController();
@@ -459,7 +459,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
     private float findAlphaFromSound(){
         if(mAudioManager!=null){
-            int alpha=currentVolumn*(0xCC-0x55)/maxVolume+0x55;
+            int alpha=currentVolume*(0xCC-0x55)/maxVolume+0x55;
             return (float)alpha;
         }else{
             return (float)0xCC;
@@ -492,7 +492,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                         return true;
                     }
                 }else if(pathname.isDirectory()){
-                    getVideoFile(pathname,file);
+                    getVideoFile(list,pathname);
                 }
                 return false;
             }
