@@ -237,19 +237,19 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
     public VideoView(Context context) {
         super(context);
-        mContext=context;
+        mContext = context;
         initVideoView();
     }
 
     public VideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext=context;
+        mContext = context;
         initVideoView();
     }
 
     public VideoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext=context;
+        mContext = context;
         initVideoView();
     }
 
@@ -315,11 +315,11 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         }
     }
 
-    public int getmVideoWidth() {
+    public int getVideoWidth() {
         return mVideoWidth;
     }
 
-    public int getmVideoHeight() {
+    public int getVideoHeight() {
         return mVideoHeight;
     }
 
@@ -338,7 +338,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
         setFocusableInTouchMode(true);
         requestFocus();
     }
-
 
 
     @Override
@@ -394,7 +393,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
     @Override
     public boolean isPlaying() {
-        if(mMediaPlayer!=null&&mIsPrepared){
+        if (mMediaPlayer != null && mIsPrepared) {
             return mMediaPlayer.isPlaying();
         }
         return false;
@@ -402,7 +401,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
     @Override
     public int getBufferPercentage() {
-        if(mMediaPlayer!=null){
+        if (mMediaPlayer != null) {
             return mCurrentBufferPercentage;
         }
         return 0;
